@@ -18,9 +18,12 @@
 #include "_link_layer_functions.c"
 
 int main()
-{
+{	
 	unsigned char buffer[ETH_FRAME_LEN] = ""; 						/* unsigned (important) byte element size array of ethernet octet length (1514) */
+	struct ethernetFrame *frame;
+	unsigned char etherType[2];
 	
+	do {
 	getLinkLayerFrame(buffer);
 	
 	int i;
@@ -32,4 +35,9 @@ int main()
 		printf("%X-", temp); 					/* Print cleared last four bits as hexidecimal (ex. 00000110 -> 6) */
 	}
 	printf("\n\n");
+	
+	frame = parseFrame(buffer);
+	printFrame(frame);
+	
+	} while( frame->etherType[0] != ARPetherType[0]  || frame->etherType[1] != ARPetherType[1] );
 }
