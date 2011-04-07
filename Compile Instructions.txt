@@ -1,0 +1,3 @@
+When compiling this program please use the following command...
+
+cc -o wirePirate wirePirate.c
