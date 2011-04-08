@@ -96,17 +96,17 @@ void printFrame(struct ethernetFrame *frame)
 		temp >>= 4;
 		printf("%X", temp);
 	}
-	printf("\n");
+	printf("\n\n");
 }
 
 void descEtherType(struct ethernetFrame *frame)
 {
 	/* IPv4 */
-	if( frame->etherType[0] == IP4etherType[0]  && frame->etherType[1] == IP4etherType[1] ) {printf(" - This type means DOD Internet Protocol (IP)");}
+	if( frame->etherType[0] == IP4etherType[0]  && frame->etherType[1] == IP4etherType[1] ) {printf(" - DOD Internet Protocol (IP)");}
 	
 	/* IPv6 */
-	if( frame->etherType[0] == IP6etherType[0]  && frame->etherType[1] == IP6etherType[1] ) {printf(" - This type means IP version 6");}
+	if( frame->etherType[0] == IP6etherType[0]  && frame->etherType[1] == IP6etherType[1] ) {printf(" - IP version 6");}
 	
 	/* ARP Ethertype */
-	if( frame->etherType[0] == ARPetherType[0]  && frame->etherType[1] == ARPetherType[1] ) {printf(" - Address Resolution Protocol (ARP) (for IP and for CHAOS)");}
+	if( frame->etherType[0] == ARPetherType[0]  && frame->etherType[1] == ARPetherType[1] ) {printf(" - Address Resolution Protocol (ARP)");}
 }

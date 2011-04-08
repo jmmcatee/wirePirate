@@ -19,25 +19,23 @@
 
 int main()
 {	
-	unsigned char buffer[ETH_FRAME_LEN] = ""; 						/* unsigned (important) byte element size array of ethernet octet length (1514) */
-	struct ethernetFrame *frame;
-	unsigned char etherType[2];
+	unsigned char buffer[ETH_FRAME_LEN] = "";	/* unsigned (important) byte element size array of ethernet octet length (1514) */
+	struct ethernetFrame *ip4Frame;
+	struct ethernetFrame *arpFrame;
 	
+	/* Get ARP Frame */
 	do {
-	getLinkLayerFrame(buffer);
+		getLinkLayerFrame(buffer);
+		
+		arpFrame = parseFrame(buffer);	
+	} while( arpFrame->etherType[0] != ARPetherType[0]  || arpFrame->etherType[1] != ARPetherType[1] );
+	printFrame(arpFrame);
 	
-	int i;
-	for(i = 0; i < ETH_FRAME_LEN; i++)
-	{
-		printf("%X", (buffer[i] >> 4) ); 		/* Print the first four bits as hexidecimal (ex. 10110110 -> 00001011 -> B) */
-		unsigned char temp = buffer[i] << 4; 	/* Clear the first four bits of the char (ex. 10110110 -> 01100000) */
-		temp >>= 4; 							/* Reset location of four moved bits back to end of char (ex. 01100000 -> 00000110) */
-		printf("%X-", temp); 					/* Print cleared last four bits as hexidecimal (ex. 00000110 -> 6) */
-	}
-	printf("\n\n");
-	
-	frame = parseFrame(buffer);
-	printFrame(frame);
-	
-	} while( frame->etherType[0] != ARPetherType[0]  || frame->etherType[1] != ARPetherType[1] );
+	/* Get IPv4 Frame */
+	do {
+		getLinkLayerFrame(buffer);
+		
+		ip4Frame = parseFrame(buffer);	
+	} while( ip4Frame->etherType[0] != IP4etherType[0]  || ip4Frame->etherType[1] != IP4etherType[1] );
+	printFrame(ip4Frame);
 }
