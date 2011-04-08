@@ -28,7 +28,7 @@ int main()
 		getLinkLayerFrame(buffer);
 		
 		arpFrame = parseFrame(buffer);	
-	} while( arpFrame->etherType[0] != ARPetherType[0]  || arpFrame->etherType[1] != ARPetherType[1] );
+	} while( checkEtherType(arpFrame, ARPetherType) );
 	printFrame(arpFrame);
 	
 	/* Get IPv4 Frame */
@@ -36,6 +36,6 @@ int main()
 		getLinkLayerFrame(buffer);
 		
 		ip4Frame = parseFrame(buffer);	
-	} while( ip4Frame->etherType[0] != IP4etherType[0]  || ip4Frame->etherType[1] != IP4etherType[1] );
+	} while( checkEtherType(ip4Frame, IP4etherType) );
 	printFrame(ip4Frame);
 }

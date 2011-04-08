@@ -12,7 +12,6 @@ struct ethernetFrame
 	unsigned char payload[(ETH_FRAME_LEN - 14)];
 };
 
-
 unsigned char ARPetherType[2] = {0x08, 0x06}; /* ARP  */
 unsigned char IP4etherType[2] = {0x08, 0x00}; /* IPv4  */
 unsigned char IP6etherType[2] = {0x86, 0xDD}; /* IPv6  */
@@ -99,14 +98,20 @@ void printFrame(struct ethernetFrame *frame)
 	printf("\n\n");
 }
 
+int checkEtherType(struct ethernetFrame *frame, unsigned char *etherTypeArray)
+{
+	if( frame->etherType[0] == etherTypeArray[0]  && frame->etherType[1] == etherTypeArray[1] ) { return 1; }
+	else { return 0; }
+}
+
 void descEtherType(struct ethernetFrame *frame)
 {
 	/* IPv4 */
-	if( frame->etherType[0] == IP4etherType[0]  && frame->etherType[1] == IP4etherType[1] ) {printf(" - DOD Internet Protocol (IP)");}
+	if( checkEtherType(frame, IP4etherType) ) {printf(" - DOD Internet Protocol (IP)");}
 	
 	/* IPv6 */
-	if( frame->etherType[0] == IP6etherType[0]  && frame->etherType[1] == IP6etherType[1] ) {printf(" - IP version 6");}
+	if( checkEtherType(frame, IP6etherType) ) {printf(" - IP version 6");}
 	
 	/* ARP Ethertype */
-	if( frame->etherType[0] == ARPetherType[0]  && frame->etherType[1] == ARPetherType[1] ) {printf(" - Address Resolution Protocol (ARP)");}
+	if( checkEtherType(frame, ARPetherType) ) {printf(" - Address Resolution Protocol (ARP)");}
 }
