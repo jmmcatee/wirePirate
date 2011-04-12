@@ -10,21 +10,23 @@ struct ethernetFrame
 	unsigned char sourceAddr[6];
 	unsigned char etherType[2];
 	unsigned char payload[(ETH_FRAME_LEN - 14)];
+	unsigned int  size;
+	unsigned char rawFrame[ETH_FRAME_LEN];
 };
 
 unsigned char ARPetherType[2] = {0x08, 0x06}; /* ARP  */
 unsigned char IP4etherType[2] = {0x08, 0x00}; /* IPv4  */
 unsigned char IP6etherType[2] = {0x86, 0xDD}; /* IPv6  */
 
-void getLinkLayerFrame(unsigned char* buffer)
+unsigned int getLinkLayerFrame(unsigned char* buffer)
 {
 	int eth_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); /* Open a RAW socket with Ethernet Frame included */
 	if (eth_socket == -1) { printf("ERROR, Socket did not bind for some reason."); error(1); } /* Error in binding socket */
 	
-	recv(eth_socket, buffer, ETH_FRAME_LEN, 0); 		/* Read socket into buffer array while recv is not in error */
+	return recv(eth_socket, buffer, ETH_FRAME_LEN, 0); 		/* Read socket into buffer array while recv is not in error */
 }
 
-struct ethernetFrame *parseFrame(unsigned char* buffer)
+struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE)
 {
 	struct ethernetFrame *returnFrame = (struct ethernetFrame *) malloc (sizeof(struct ethernetFrame));
 	
@@ -47,9 +49,16 @@ struct ethernetFrame *parseFrame(unsigned char* buffer)
 	}
 	
 	spacer = 14;
-	for(i=0; i<(ETH_FRAME_LEN - 14); i++)
+	for(i=0; i<(SIZE - spacer); i++)
 	{
 		returnFrame->payload[i] = buffer[spacer + i];
+	}
+	
+	returnFrame->size = SIZE;
+	
+	for(i=0; i < ETH_FRAME_LEN; i++)
+	{
+		returnFrame->rawFrame[i] = buffer[i];
 	}
 	
 	return returnFrame;
@@ -57,8 +66,19 @@ struct ethernetFrame *parseFrame(unsigned char* buffer)
 
 void printFrame(struct ethernetFrame *frame)
 {
-	printf("Print Destination Address: ");
 	int i;
+	
+	printf("Raw Frame:\n");
+	for(i=0; i<frame->size; i++)
+	{
+		printf("%X", (frame->rawFrame[i] >> 4));
+		unsigned char temp = frame->rawFrame[i] << 4;
+		temp >>= 4;
+		printf("%X", temp);
+	}
+	printf("\n");
+	
+	printf("Print Destination Address: ");
 	for(i=0; i<6; i++)
 	{
 		printf("%X", (frame->destAddr[i] >> 4));
@@ -88,7 +108,7 @@ void printFrame(struct ethernetFrame *frame)
 	descEtherType(frame);
 	
 	printf("\nPayload:\n");
-	for(i=0; i<(ETH_FRAME_LEN - 14); i++)
+	for(i=0; i<(frame->size - 14); i++)
 	{
 		printf("%X", (frame->payload[i] >> 4));
 		unsigned char temp = frame->payload[i] << 4;
@@ -114,4 +134,27 @@ void descEtherType(struct ethernetFrame *frame)
 	
 	/* ARP Ethertype */
 	if( checkEtherType(frame, ARPetherType) ) {printf(" - Address Resolution Protocol (ARP)");}
+}
+
+unsigned int crcCalc(unsigned char *buffer, unsigned int SIZE)
+{
+		unsigned int crc  = 0xFFFFFFFF;   // initial contents of LFBSR
+        unsigned int poly = 0x04C11DB7;//0xEDB88320;  //0x04C11DB7;   // reverse polynomial
+
+		int b;
+        for (b=0; b<SIZE; b++) {
+            int temp = (crc ^ buffer[b]) & 0xff;
+
+            // read 8 bits one at a time
+            int i;
+            for (i = 0; i < 8; i++) {
+                if ((temp & 1) == 1) temp = (temp >> 1) ^ poly;
+                else                 temp = (temp >> 1);
+            }
+            crc = (crc >> 8) ^ temp;
+        }
+
+        // flip bits
+        crc = crc ^ 0xffffffff;
+        return crc;
 }
