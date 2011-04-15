@@ -6,8 +6,12 @@
 /* Header File */
 #include "wirePirate.h"
 
+/* Benchmark Header Files */
+#include "_benchmarks_timers.h"
+
 /* Program Function Header Files */
 #include "_link_layer_functions.h"
+
 
 int main()
 {	

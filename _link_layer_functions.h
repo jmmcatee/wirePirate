@@ -22,14 +22,15 @@ unsigned char IP6etherType[2] = {0x86, 0xDD}; /* IPv6  */
 
 struct ethernetFrame
 {
-	unsigned char		destAddr[6];
-	unsigned char		sourceAddr[6];
-	unsigned char		etherType[2];
-	unsigned int		FCS;
-	unsigned int  		size;
+	unsigned char	destAddr[6];
+	unsigned char	sourceAddr[6];
+	unsigned char	etherType[2];
+	unsigned int	FCS;
+	double 			fcsBenchmark;
+	unsigned int	size;
 	
-	unsigned char		payload[(ETH_FRAME_LEN - 14)];	
-	unsigned char		rawFrame[ETH_FRAME_LEN];
+	unsigned char	payload[(ETH_FRAME_LEN - 14)];	
+	unsigned char	rawFrame[ETH_FRAME_LEN];
 };
 
 
@@ -78,7 +79,9 @@ struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE)
 		returnFrame->rawFrame[i] = buffer[i];
 	}
 	
-	returnFrame->FCS = crc32(buffer, SIZE);//crcCalc(buffer, SIZE);
+	startTimer = startTimeBenchmark();
+	returnFrame->FCS = crc32(buffer, SIZE);
+	returnFrame->fcsBenchmark = getTimeToRun(startTimer);
 	
 	return returnFrame;
 }
@@ -133,7 +136,8 @@ void printFrame(struct ethernetFrame *frame)
 	/* Print 7/8 4 bits */
 	crcTemp = frame->FCS << 24; printf("%X", (crcTemp >> 28));
 	/* Print 8/8 4 bits */
-	crcTemp = frame->FCS << 28; printf("%X\n", (crcTemp >> 28));
+	crcTemp = frame->FCS << 28; printf("%X", (crcTemp >> 28));
+	printf(" (%f seconds)\n", frame->fcsBenchmark);
 	
 	printf("Payload:\n");
 	for(i=0; i<(frame->size - 14); i++)
@@ -225,33 +229,4 @@ void init_crc32()
                 
                 crc32_table[i] = c;
         }
-}
-
-
-
- 
-
-
-
-unsigned int crcCalc(unsigned char *buffer, unsigned int SIZE)
-{
-		unsigned int crc  = 0xFFFFFFFF;   // initial contents of LFBSR
-        unsigned int poly = 0x04C11DB7;//0xEDB88320;  //0x04C11DB7;   // reverse polynomial
-
-		int b;
-        for (b=0; b<SIZE; b++) {
-            int temp = (crc ^ buffer[b]) & 0xff;
-
-            // read 8 bits one at a time
-            int i;
-            for (i = 0; i < 8; i++) {
-                if ((temp & 1) == 1) temp = (temp >> 1) ^ poly;
-                else                 temp = (temp >> 1);
-            }
-            crc = (crc >> 8) ^ temp;
-        }
-
-        // flip bits
-        crc = crc ^ 0xffffffff;
-        return crc;
 }
