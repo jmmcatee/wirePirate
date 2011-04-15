@@ -3,13 +3,8 @@
  *
 */
 
-/* Standard included libraries */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/* Necessary included networking libraries and underlying OS libraries */
-#include "_networking_includes.h"
+/* Header File */
+#include "wirePirate.h"
 
 /* Program Function Header Files */
 #include "_link_layer_functions.h"
