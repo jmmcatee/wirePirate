@@ -4,6 +4,18 @@
  *	File: _link_layer_functions.c
  */
 
+unsigned int getLinkLayerFrame(unsigned char* buffer);
+struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE);
+void printFrame(struct ethernetFrame *frame);
+int checkEtherType(struct ethernetFrame *frame, unsigned char *etherTypeArray);
+void descEtherType(struct ethernetFrame *frame);
+unsigned int crcCalc(unsigned char *buffer, unsigned int SIZE);
+
+
+unsigned char ARPetherType[2] = {0x08, 0x06}; /* ARP  */
+unsigned char IP4etherType[2] = {0x08, 0x00}; /* IPv4  */
+unsigned char IP6etherType[2] = {0x86, 0xDD}; /* IPv6  */
+
 struct ethernetFrame
 {
 	unsigned char destAddr[6];
@@ -16,9 +28,8 @@ struct ethernetFrame
 	unsigned char rawFrame[ETH_FRAME_LEN];
 };
 
-unsigned char ARPetherType[2] = {0x08, 0x06}; /* ARP  */
-unsigned char IP4etherType[2] = {0x08, 0x00}; /* IPv4  */
-unsigned char IP6etherType[2] = {0x86, 0xDD}; /* IPv6  */
+
+
 
 unsigned int getLinkLayerFrame(unsigned char* buffer)
 {
