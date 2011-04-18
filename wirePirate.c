@@ -9,8 +9,11 @@
 /* Benchmark Header Files */
 #include "_benchmarks_timers.h"
 
-/* Program Function Header Files */
+/* Ethernet Function Header File */
 #include "_link_layer_functions.h"
+
+/* User Interface Header File */
+#include "_user_interface.h"
 
 
 int main()
@@ -18,6 +21,9 @@ int main()
 	unsigned char buffer[ETH_FRAME_LEN] = "";	/* unsigned (important) byte element size array of ethernet octet length (1514) */
 	struct ethernetFrame *ip4Frame;
 	struct ethernetFrame *arpFrame;
+	
+	printOptions();
+	
 	int s = createSocket();
 	
 	printf("Capturing Packets...\n\n");
