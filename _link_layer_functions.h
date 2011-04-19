@@ -28,12 +28,12 @@ unsigned char ip6Type[2] = {0x86, 0xDD}; /* IPv6  */
 /* C struct to hold a full ethernet packet */
 struct ethernetFrame
 {
-	unsigned char destAddr[6];		/* Destination MAC address (6 octets) */
-	unsigned char sourceAddr[6];	/* Source MAC address (6 octets) */
-	unsigned char etherType[2];		/* Ethertype used to define frame payload */
-	unsigned int  FCS;				/* Frame Check Sequence (calculated in this framework) */
-	double 		  fcsBenchmark;		/* Time in seconds it took to calculate the FCS */
-	unsigned int  size;				/* Size of the ethernet frame as specified by the recv function in socket programming */
+	unsigned char destAddr[6];						/* Destination MAC address (6 octets) */
+	unsigned char sourceAddr[6];					/* Source MAC address (6 octets) */
+	unsigned char etherType[2];						/* Ethertype used to define frame payload */
+	unsigned int  FCS;								/* Frame Check Sequence (calculated in this framework) */
+	double 		  fcsBenchmark;						/* Time in seconds it took to calculate the FCS */
+	unsigned int  size;								/* Size of the ethernet frame as specified by the recv function in socket programming */
 	unsigned char payload[(ETH_FRAME_LEN - 14)];	/* Payload from the ethernet frame to be passed to higher layer header files */
 	unsigned char rawFrame[ETH_FRAME_LEN];			/* The raw frame data used to populate the struct */
 };
