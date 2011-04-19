@@ -112,7 +112,9 @@ void printFrame(struct ethernetFrame *frame)
 {
 	int i; unsigned char temp;
 	
-	printf("Print Destination Address: ");
+	printf("################################ Ethernet Frame ################################");
+	
+	printf("## Print Destination Address: ");
 	for(i=0; i<6; i++)
 	{
 		printf("%X", (frame->destAddr[i] >> 4));	/* Print the first and second 4 bits of the octet */
@@ -121,7 +123,7 @@ void printFrame(struct ethernetFrame *frame)
 		if ( i != 5 ) { printf(":"); }				/* Print colon between octet values */
 	}
 	
-	printf("\nPrint Source Address: ");
+	printf("\n## Print Source Address: ");
 	for(i=0; i<6; i++)
 	{
 		printf("%X", (frame->sourceAddr[i] >> 4));	/* Print the first and second 4 bits of the octet */
@@ -131,7 +133,7 @@ void printFrame(struct ethernetFrame *frame)
 	}
 	
 	/* Print the ethertype one octect after another */
-	printf("\nPrint EtherType: ");
+	printf("\n## Print EtherType: ");
 	for(i=0; i<2; i++)
 	{
 		printf("%X", (frame->etherType[i] >> 4));
@@ -146,29 +148,31 @@ void printFrame(struct ethernetFrame *frame)
 	if( checkEtherType(frame, arpType) ) {printf(" - Address Resolution Protocol (ARP)");}
 	printf("\n");
 	
-	printf("CRC Value: %X%X%X%X%X%X%X%X (%f seconds)\n",
+	printf("## CRC Value: %X%X%X%X%X%X%X%X (%f seconds)\n",
 		(frame->FCS >> 28), ((frame->FCS << 4) >> 28), ((frame->FCS << 8) >> 28), 
 		((frame->FCS << 12) >> 28), ((frame->FCS << 16) >> 28), ((frame->FCS << 20) >> 28),
 		((frame->FCS << 24) >> 28), ((frame->FCS << 28) >> 28), (frame->fcsBenchmark)
 	);
 	
-	printf("Payload:\n");
+	printf("## Payload:\n##  ");
 	for(i=0; i<(frame->size - 14); i++)
 	{ 
 		printf("%X", (frame->payload[i] >> 4));
 		temp = frame->payload[i] << 4; temp >>= 4;
 		printf("%X", temp);
+		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
 	}
 	printf("\n");
 	
-	printf("Raw Frame:\n");
+	printf("#### Raw Frame:\n##  ");
 	for(i=0; i<frame->size; i++)
 	{
 		printf("%X", (frame->rawFrame[i] >> 4));
 		temp = frame->rawFrame[i] << 4; temp >>= 4;
 		printf("%X", temp);
+		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
 	}
-	printf("\n\n");
+	printf("\n################################################################################\n\n");
 }
 
 /* function to return a 1 if the ethertype matches the ethertype array passed to it and 0 if it doesn't */

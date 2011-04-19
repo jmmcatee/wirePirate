@@ -11,3 +11,6 @@
 #include <linux/if_packet.h>
 #include <linux/if_ether.h>
 #include <linux/if_arp.h>
+
+/* Global Definitions */
+#define VERSION 0.1

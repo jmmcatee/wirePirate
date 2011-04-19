@@ -9,16 +9,15 @@ int runGrabPacket();
 
 
 int printOptions()
-{
+{	
 	int option = 0;
 	
-	fflush( stdout );
 	printf("Please choose an option.\n");
 	printf(" 1: Grab random packet and frame stack\n");
 	printf(" 2: Grab specific type packet and frame stack\n");
 	printf(" 3: Get a number of packets and frames (not implemented)\n");
-	printf(" q: Quit");
-	printf(" -> "); fflush( stdout );
+	printf(" 0: Quit\n");
+	printf(" -> ");
 	
 	scanf("%d", &option);
 	printf("\n");
@@ -39,7 +38,7 @@ int runOptions(int option)
 			return 1;
 			break;
 		case 3:
-			printf("Does nothing\n");
+			printf("Does nothing\n\n");
 			return 1;
 			break;
 		case 0:
@@ -75,7 +74,7 @@ int runGrabPacket()
 	printf(" 1: ARP Frames  (0x0809)\n");
 	printf(" 2: IPv4 & IPv6 (0x0800)\n");
 	printf(" 0: Quit\n");
-	printf(" -> "); fflush(stdout);
+	printf(" -> ");
 	
 	scanf("%d", &frameType);
 	printf("\n");
@@ -97,6 +96,7 @@ int runGrabPacket()
 			return 1;
 			break;
 		case 0:
+			printf("\n\n");
 			return 0;
 			break;
 		default:
