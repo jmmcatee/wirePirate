@@ -13,6 +13,6 @@ int main()
 	
 	while ( runOptions(printOptions()) )
 	{
-		// This will run until it is successful or exited
+		// This will run until it is exited
 	}
 }
