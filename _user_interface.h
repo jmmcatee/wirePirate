@@ -31,10 +31,12 @@ int runOptions(int option)
 	switch(option)
 	{
 		case 1:
+			system("clear");
 			runRandGrabPacket();
 			return 1;
 			break;
 		case 2:
+			system("clear");
 			while ( runGrabPacket() ) {/* will run until completed successfully */}
 			return 1;
 			break;
@@ -47,7 +49,8 @@ int runOptions(int option)
 			return 1;
 			break;
 		case 0:
-			printf("\nExiting...\n\n");
+			system("clear");
+			printf("Exiting...\n");
 			return 0;
 			break;
 		default:
@@ -70,6 +73,7 @@ void runRandGrabPacket()
 int runGrabPacket()
 {
 	int frameType = 0;
+	unsigned int frameCount = 0;
 	
 	int s = createSocket();
 	unsigned char buffer[ETH_FRAME_LEN] = "";
@@ -82,30 +86,37 @@ int runGrabPacket()
 	printf(" -> ");
 	
 	scanf("%d", &frameType);
-	printf("\n");
+	printf("\n\n");
+	system("clear");
 	
 	switch(frameType)
 	{
 		case 1:
+			printf("Capturing Packets...\n");
 			do {
 				frameWithType = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Number of frames parsed: %d\r", frameCount); fflush(stdout);
 			} while ( !checkEtherType(frameWithType, arpType) );
 			printFrame(frameWithType);
 			return 1;
 			break;
 		case 2:
+			printf("Capturing Packets...\n");
 			do {
 				frameWithType = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Number of frames parsed: %d\r", frameCount); fflush(stdout);
 			} while ( !checkEtherType(frameWithType, ip4Type) );
 			printFrame(frameWithType);
 			return 1;
 			break;
 		case 0:
-			printf("\n\n");
+			system("clear");  // printf("\n\n");
 			return 0;
 			break;
 		default:
-			printf("Error, %d is not a valid option. Please choose again.\n", frameType);
+			printf("Error, %d is not a valid option. Please choose again.\n\n", frameType);
 			return 1;
 			break;
 	}

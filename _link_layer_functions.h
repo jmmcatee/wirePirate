@@ -36,6 +36,7 @@ struct ethernetFrame
 	unsigned int  size;								/* Size of the ethernet frame as specified by the recv function in socket programming */
 	unsigned char payload[(ETH_FRAME_LEN - 14)];	/* Payload from the ethernet frame to be passed to higher layer header files */
 	unsigned char rawFrame[ETH_FRAME_LEN];			/* The raw frame data used to populate the struct */
+	struct ip4Packet *ip4payload;					/* Pointer to the IPv4 packet data stored in a custom struct */
 };
 
 /*
@@ -112,7 +113,7 @@ void printFrame(struct ethernetFrame *frame)
 {
 	int i; unsigned char temp;
 	
-	printf("################################ Ethernet Frame ################################");
+	printf("\n################################ Ethernet Frame ################################\n");
 	
 	printf("## Print Destination Address: ");
 	for(i=0; i<6; i++)
@@ -164,7 +165,7 @@ void printFrame(struct ethernetFrame *frame)
 	}
 	printf("\n");
 	
-	printf("#### Raw Frame:\n##  ");
+	printf("## Raw Frame:\n##  ");
 	for(i=0; i<frame->size; i++)
 	{
 		printf("%X", (frame->rawFrame[i] >> 4));

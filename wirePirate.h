@@ -12,5 +12,10 @@
 #include <linux/if_ether.h>
 #include <linux/if_arp.h>
 
+/* Custom built header files */
+#include "_benchmarks_timers.h"			// Benchmark Header Files
+#include "_link_layer_functions.h"		// Ethernet Function Header File
+#include "_user_interface.h"			// User Interface Header File
+
 /* Global Definitions */
 #define VERSION 0.1
