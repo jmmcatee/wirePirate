@@ -14,8 +14,9 @@ int printOptions()
 	
 	printf("Please choose an option.\n");
 	printf(" 1: Grab random packet and frame stack\n");
-	printf(" 2: Grab specific type packet and frame stack\n");
-	printf(" 3: Get a number of packets and frames (not implemented)\n");
+	printf(" 2: Grab specific frame type stack\n");
+	printf(" 3: Grab specific packet type (not implemented)\n");
+	printf(" 4: Get a number of packets and frames (not implemented)\n");
 	printf(" 0: Quit\n");
 	printf(" -> ");
 	
@@ -38,6 +39,10 @@ int runOptions(int option)
 			return 1;
 			break;
 		case 3:
+			printf("Does nothing\n\n");
+			return 1;
+			break;
+		case 4:
 			printf("Does nothing\n\n");
 			return 1;
 			break;
