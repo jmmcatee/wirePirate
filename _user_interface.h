@@ -16,7 +16,7 @@ int printOptions()
 	printf(" 1: Grab random packet and frame stack\n");
 	printf(" 2: Grab specific frame type stack\n");
 	printf(" 3: Grab specific packet type (not implemented)\n");
-	printf(" 4: Get a number of packets and frames (not implemented)\n");
+	printf(" 4: Get a number of packets and frames (partially implemented)\n");
 	printf(" 0: Quit\n");
 	printf(" -> ");
 	
@@ -37,7 +37,7 @@ int runOptions(int option)
 			break;
 		case 2:
 			system("clear");
-			while ( runGrabPacket() ) {/* will run until completed successfully */}
+			while ( runGrabPacket() ) {/* will run until exited */}
 			return 1;
 			break;
 		case 3:
@@ -45,7 +45,7 @@ int runOptions(int option)
 			return 1;
 			break;
 		case 4:
-			printf("Does nothing\n\n");
+			while ( runGetNumPackets() ) {/* will run until exited */}
 			return 1;
 			break;
 		case 0:
@@ -117,6 +117,99 @@ int runGrabPacket()
 			break;
 		default:
 			printf("Error, %d is not a valid option. Please choose again.\n\n", frameType);
+			return 1;
+			break;
+	}
+}
+
+int runGetNumPackets()
+{
+	short int typeToGet = 0;
+	int numPackets = 0;
+	unsigned int frameCount = 0;
+	unsigned int checkedFrame = 0;
+	short int frameType = 0;
+
+	int s = createSocket();
+	unsigned char buffer[ETH_FRAME_LEN] = "";
+	struct ethernetFrame *frame;
+	
+	printf("Do you want to get a type of frame, packet, or any.\n");
+	printf(" 1: Frame Types\n");
+	printf(" 2: Packet Types\n");
+	printf(" 3: Any\n");
+	printf(" 0: Quit\n");
+	printf(" -> ");
+	
+	scanf("%hd", &typeToGet); printf("\n");
+	
+	short int gotType = 1;
+	unsigned char *typeToCompare;
+	
+	switch(typeToGet)
+	{
+		case 1:			
+			while ( gotType )
+			{
+				printf("Please select the EtherType you wish to grab.\n");
+				printf(" 1: ARP Frames  (0x0809)\n");
+				printf(" 2: IPv4 & IPv6 (0x0800)\n");
+				printf(" 0: Quit\n");
+				printf(" -> ");
+	
+				scanf("%hd", &frameType);
+			
+				switch(frameType)
+				{
+					case 1:
+						typeToCompare = arpType;
+						gotType = 0;
+						break;
+					case 2:
+						typeToCompare = ip4Type;
+						gotType = 0;
+						break;
+					default:
+						printf("Error, %d is not an option... Pick again\n\n", frameType);
+						break;
+				}
+			}
+	
+			printf("How many frame/packets do you want?\n -> "); scanf("%d", &numPackets); system("clear");
+			printf("Capturing Packets...\n\n");
+			do {
+				do {
+					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+					checkedFrame++;
+					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
+				} while ( !checkEtherType(frame, typeToCompare) );
+				frameCount++;
+				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
+				checkedFrame = 0;
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 2:
+			
+			break;
+		case 3:
+			printf("How many frame/packets do you want?\n -> "); scanf("%d", &numPackets); system("clear");
+			printf("Capturing Packets...\n");
+			do {
+				frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Frame: %d", frameCount);
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 0:
+			system("clear");
+			return 0;
+			break;
+		default:
+			printf("Error, %d is not a valid option. Please choose again.\n\n", typeToGet);
 			return 1;
 			break;
 	}
