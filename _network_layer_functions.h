@@ -177,23 +177,30 @@ void printIP4Packet(struct ip4Packet *packet)
 	}
 	printf(")\n");
 	
-	printf("## Payload:\n##  ");
-	for(i=0; i<(packet->size-14); i++)
+	if ( printPayload )
 	{
-		printf("%02X", packet->payload[i]);
-		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		printf("## Payload:\n##  ");
+		for(i=0; i<(packet->size-14); i++)
+		{
+			printf("%02X", packet->payload[i]);
+			if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		}
+		printf("\n");
 	}
-	printf("\n");
 
-	printf("## Raw Packet:\n##  ");
-	//size is the size of the payload
-	//not entirely sure about the + and - but it works
-	for(i=0; i<(packet->size+6); i++)
+	if ( printRaw )
 	{
-		printf("%02X", packet->rawPacket[i]);
-		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		printf("## Raw Packet:\n##  ");
+		//size is the size of the payload
+		//not entirely sure about the + and - but it works
+		for(i=0; i<(packet->size+6); i++)
+		{
+			printf("%02X", packet->rawPacket[i]);
+			if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		}
+		printf("\n");
 	}
-	printf("\n################################################################################\n\n");
+	printf("################################################################################\n\n");
 }
 
 int checkIPPacketType(struct ethernetFrame *linkFrame)

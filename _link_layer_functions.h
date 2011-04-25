@@ -150,25 +150,32 @@ void printFrame(struct ethernetFrame *frame)
 		((frame->FCS << 24) >> 28), ((frame->FCS << 28) >> 28), (frame->fcsBenchmark)
 	);
 	
-	printf("## Payload:\n##  ");
-	for(i=0; i<(frame->size - 14); i++)
-	{ 
-		printf("%X", (frame->payload[i] >> 4));
-		temp = frame->payload[i] << 4; temp >>= 4;
-		printf("%X", temp);
-		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
-	}
-	printf("\n");
-	
-	printf("## Raw Frame:\n##  ");
-	for(i=0; i<frame->size; i++)
+	if ( printPayload )
 	{
-		printf("%X", (frame->rawFrame[i] >> 4));
-		temp = frame->rawFrame[i] << 4; temp >>= 4;
-		printf("%X", temp);
-		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		printf("## Payload:\n##  ");
+		for(i=0; i<(frame->size - 14); i++)
+		{ 
+			printf("%X", (frame->payload[i] >> 4));
+			temp = frame->payload[i] << 4; temp >>= 4;
+			printf("%X", temp);
+			if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		}
+		printf("\n");
 	}
-	printf("\n################################################################################\n\n");
+	
+	if ( printRaw )
+	{
+		printf("## Raw Frame:\n##  ");
+		for(i=0; i<frame->size; i++)
+		{
+			printf("%X", (frame->rawFrame[i] >> 4));
+			temp = frame->rawFrame[i] << 4; temp >>= 4;
+			printf("%X", temp);
+			if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
+		}
+		printf("\n");
+	}
+	printf("################################################################################\n\n");
 	
 	if ( frame->ip4payload != NULL )
 	{
