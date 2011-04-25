@@ -2,21 +2,15 @@
  *	This is a library for the user interface portion of wirePirate.
  */
 
-int printOptions();
-int runOptions(int option);
-void runRandGrabPacket();
-int runGrabPacket();
-
 
 int printOptions()
 {	
 	int option = 0;
 	
 	printf("Please choose an option.\n");
-	printf(" 1: Grab random packet and frame stack\n");
-	printf(" 2: Grab specific frame type stack\n");
-	printf(" 3: Grab specific packet type (not implemented)\n");
-	printf(" 4: Get a number of packets and frames (partially implemented)\n");
+	printf(" 1: Grab random frame stack\n");
+	printf(" 2: Grab specific frame or packet type\n");
+	printf(" 3: Get a number of packets and frames\n");
 	printf(" 0: Quit\n");
 	printf(" -> ");
 	
@@ -41,10 +35,6 @@ int runOptions(int option)
 			return 1;
 			break;
 		case 3:
-			printf("Does nothing\n\n");
-			return 1;
-			break;
-		case 4:
 			while ( runGetNumPackets() ) {/* will run until exited */}
 			return 1;
 			break;
@@ -80,8 +70,12 @@ int runGrabPacket()
 	struct ethernetFrame *frameWithType;
 	
 	printf("Please select the EtherType you wish to grab.\n");
-	printf(" 1: ARP Frames  (0x0809)\n");
-	printf(" 2: IPv4 & IPv6 (0x0800)\n");
+	printf(" 1: Frame Type: ARP\n");
+	printf(" 2: Frame Type: IP\n");
+	printf(" 3: Packet Type: IPv4\n");
+	printf(" 4: Packet Type: IPv6\n");
+	printf(" 5: Packet Type: TCP\n");
+	printf(" 6: Packet Type: UDP\n");
 	printf(" 0: Quit\n");
 	printf(" -> ");
 	
@@ -111,6 +105,46 @@ int runGrabPacket()
 			printFrame(frameWithType);
 			return 1;
 			break;
+		case 3:
+			printf("Capturing Packets...\n");
+			do {
+				frameWithType = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Number of frames parsed: %d\r", frameCount); fflush(stdout);
+			} while ( checkIPPacketType(frameWithType) != 4 );
+			printFrame(frameWithType);
+			return 1;
+			break;
+		case 4:
+			printf("Capturing Packets...\n");
+			do {
+				frameWithType = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Number of frames parsed: %d\r", frameCount); fflush(stdout);
+			} while ( checkIPPacketType(frameWithType) != 6 );
+			printFrame(frameWithType);
+			return 1;
+			break;
+		case 5:
+			printf("Capturing Packets...\n");
+			do {
+				frameWithType = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Number of frames parsed: %d\r", frameCount); fflush(stdout);
+			} while ( !checkProtocolType(frameWithType->ip4payload, tcpType) );
+			printFrame(frameWithType);
+			return 1;
+			break;
+		case 6:
+			printf("Capturing Packets...\n");
+			do {
+				frameWithType = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Number of frames parsed: %d\r", frameCount); fflush(stdout);
+			} while ( !checkProtocolType(frameWithType->ip4payload, udpType) );
+			printFrame(frameWithType);
+			return 1;
+			break;
 		case 0:
 			system("clear");  // printf("\n\n");
 			return 0;
@@ -134,55 +168,45 @@ int runGetNumPackets()
 	unsigned char buffer[ETH_FRAME_LEN] = "";
 	struct ethernetFrame *frame;
 	
-	printf("Do you want to get a type of frame, packet, or any.\n");
-	printf(" 1: Frame Types\n");
-	printf(" 2: Packet Types\n");
-	printf(" 3: Any\n");
+	printf("Please select the EtherType you wish to grab.\n");
+	printf(" 1: Any Frames or Packets\n");
+	printf(" 2: Frame Type: ARP\n");
+	printf(" 3: Frame Type: IP\n");
+	printf(" 4: Packet Type: IPv4\n");
+	printf(" 5: Packet Type: IPv6\n");
+	printf(" 6: Packet Type: TCP\n");
+	printf(" 7: Packet Type: UDP\n");
 	printf(" 0: Quit\n");
 	printf(" -> ");
 	
 	scanf("%hd", &typeToGet); printf("\n");
 	
-	short int gotType = 1;
-	unsigned char *typeToCompare;
+	if ( typeToGet != 0 )
+	{
+		printf("How many frame/packets do you want?\n -> "); scanf("%d", &numPackets); system("clear");
+	}
 	
 	switch(typeToGet)
 	{
-		case 1:			
-			while ( gotType )
-			{
-				printf("Please select the EtherType you wish to grab.\n");
-				printf(" 1: ARP Frames  (0x0809)\n");
-				printf(" 2: IPv4 & IPv6 (0x0800)\n");
-				printf(" 0: Quit\n");
-				printf(" -> ");
-	
-				scanf("%hd", &frameType);
+		case 1:	
 			
-				switch(frameType)
-				{
-					case 1:
-						typeToCompare = arpType;
-						gotType = 0;
-						break;
-					case 2:
-						typeToCompare = ip4Type;
-						gotType = 0;
-						break;
-					default:
-						printf("Error, %d is not an option... Pick again\n\n", frameType);
-						break;
-				}
-			}
-	
-			printf("How many frame/packets do you want?\n -> "); scanf("%d", &numPackets); system("clear");
+			printf("Capturing Packets...\n");
+			do {
+				frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				frameCount++;
+				printf("Frame: %d", frameCount);
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 2:		
 			printf("Capturing Packets...\n\n");
 			do {
 				do {
 					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
 					checkedFrame++;
 					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
-				} while ( !checkEtherType(frame, typeToCompare) );
+				} while ( !checkEtherType(frame, arpType) );
 				frameCount++;
 				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
 				checkedFrame = 0;
@@ -190,16 +214,77 @@ int runGetNumPackets()
 			} while ( frameCount < numPackets );
 			return 1;
 			break;
-		case 2:
-			
-			break;
 		case 3:
-			printf("How many frame/packets do you want?\n -> "); scanf("%d", &numPackets); system("clear");
-			printf("Capturing Packets...\n");
+			printf("Capturing Packets...\n\n");
 			do {
-				frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+				do {
+					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+					checkedFrame++;
+					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
+				} while ( !checkEtherType(frame, ip4Type) );
 				frameCount++;
-				printf("Frame: %d", frameCount);
+				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
+				checkedFrame = 0;
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 4:
+			printf("Capturing Packets...\n\n");
+			do {
+				do {
+					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+					checkedFrame++;
+					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
+				} while ( checkIPPacketType(frame) != 4 );
+				frameCount++;
+				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
+				checkedFrame = 0;
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 5:
+			printf("Capturing Packets...\n\n");
+			do {
+				do {
+					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+					checkedFrame++;
+					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
+				} while ( checkIPPacketType(frame) != 6 );
+				frameCount++;
+				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
+				checkedFrame = 0;
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 6:
+			printf("Capturing Packets...\n\n");
+			do {
+				do {
+					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+					checkedFrame++;
+					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
+				} while ( !checkProtocolType(frame->ip4payload, tcpType) );
+				frameCount++;
+				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
+				checkedFrame = 0;
+				printFrame(frame);
+			} while ( frameCount < numPackets );
+			return 1;
+			break;
+		case 7:
+			printf("Capturing Packets...\n\n");
+			do {
+				do {
+					frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
+					checkedFrame++;
+					printf("Checked %d frames...\r", checkedFrame); fflush(stdout);
+				} while ( !checkProtocolType(frame->ip4payload, udpType) );
+				frameCount++;
+				printf("Frame: %d (took %d frames to find)", frameCount, checkedFrame);
+				checkedFrame = 0;
 				printFrame(frame);
 			} while ( frameCount < numPackets );
 			return 1;

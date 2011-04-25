@@ -10,16 +10,6 @@
  *	Author:	Michael McAtee
  */
 
-/* Function Prototyping */
-int createSocket();
-unsigned int getLinkLayerFrame(int eth_socket, unsigned char* buffer);
-struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE);
-void printFrame(struct ethernetFrame *frame);
-int checkEtherType(struct ethernetFrame *frame, unsigned char *etherTypeArray);
-void descEtherType(struct ethernetFrame *frame);
-unsigned int crc32(unsigned char *buf, unsigned int len);
-void init_crc32();
-
 /* Defined values for Ethertype field specified in 802.3 */
 unsigned char arpType[2] = {0x08, 0x06}; /* ARP  */
 unsigned char ip4Type[2] = {0x08, 0x00}; /* IPv4  */
@@ -104,6 +94,11 @@ struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE)
 	returnFrame->FCS = crc32(buffer, SIZE);
 	returnFrame->fcsBenchmark = getTimeToRun(startTimer); /* Stop the timer for CRC calculation and set struct value */
 	
+	if ( checkEtherType(returnFrame, ip4Type) && checkIPPacketType(returnFrame) == 4 )
+	{
+		returnFrame->ip4payload = parseIP4Packet(returnFrame);
+	}
+	
 	/* return the newly populated struct */
 	return returnFrame;
 }
@@ -115,7 +110,7 @@ void printFrame(struct ethernetFrame *frame)
 	
 	printf("\n################################ Ethernet Frame ################################\n");
 	
-	printf("## Print Destination Address: ");
+	printf("## Destination Address: ");
 	for(i=0; i<6; i++)
 	{
 		printf("%X", (frame->destAddr[i] >> 4));	/* Print the first and second 4 bits of the octet */
@@ -124,7 +119,7 @@ void printFrame(struct ethernetFrame *frame)
 		if ( i != 5 ) { printf(":"); }				/* Print colon between octet values */
 	}
 	
-	printf("\n## Print Source Address: ");
+	printf("\n## Source Address: ");
 	for(i=0; i<6; i++)
 	{
 		printf("%X", (frame->sourceAddr[i] >> 4));	/* Print the first and second 4 bits of the octet */
@@ -134,7 +129,7 @@ void printFrame(struct ethernetFrame *frame)
 	}
 	
 	/* Print the ethertype one octect after another */
-	printf("\n## Print EtherType: ");
+	printf("\n## EtherType: ");
 	for(i=0; i<2; i++)
 	{
 		printf("%X", (frame->etherType[i] >> 4));
@@ -174,6 +169,11 @@ void printFrame(struct ethernetFrame *frame)
 		if( ((i+1)%36) == 0 && i != 0 ) { printf("\n##  "); }
 	}
 	printf("\n################################################################################\n\n");
+	
+	if ( frame->ip4payload != NULL )
+	{
+		printIP4Packet(frame->ip4payload);
+	}
 }
 
 /* function to return a 1 if the ethertype matches the ethertype array passed to it and 0 if it doesn't */
