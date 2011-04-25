@@ -12,9 +12,16 @@
 #include <linux/if_ether.h>
 #include <linux/if_arp.h>
 
-/* Custom built header files */
+/* Code header files with prototyping */
+#include "_link_layer_function_prototypes.h"
+#include "_network_layer_function_prototypes.h"
+#include "_user_interface_function_prototypes.h"
+#include "_benchmarks_timers_function_prototypes.h"	
+
+/* Custom built code header files */
 #include "_benchmarks_timers.h"			// Benchmark Header Files
 #include "_link_layer_functions.h"		// Ethernet Function Header File
+#include "_network_layer_functions.h"		// Network Function Header File
 #include "_user_interface.h"			// User Interface Header File
 
 /* Global Definitions */
