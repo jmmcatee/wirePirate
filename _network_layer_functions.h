@@ -30,6 +30,7 @@ struct ip4Packet
 
 	unsigned int size;
 	struct tcpPacket *tcp;
+	struct udpPacket *udp;
 };
 
 
@@ -105,6 +106,11 @@ struct ip4Packet *parseIP4Packet(struct ethernetFrame *linkFrame)
 	if( checkProtocolType(packet, tcpType) )
 	{
 		packet->tcp = parseTCPPacket(packet);
+	}
+	
+	if( checkProtocolType(packet, udpType) )
+	{
+		packet->udp = parseUDPPacket(packet);
 	}
 
 	return packet;
@@ -213,6 +219,9 @@ void printIP4Packet(struct ip4Packet *packet)
 	if( packet->tcp != NULL )
 	{
 		printTCPPacket(packet->tcp);
+	} else if ( packet->udp != NULL )
+	{
+		printUDPPacket(packet->udp);
 	}
 }
 

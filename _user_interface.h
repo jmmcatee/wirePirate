@@ -69,7 +69,7 @@ int runGrabPacket()
 	unsigned char buffer[ETH_FRAME_LEN] = "";
 	struct ethernetFrame *frameWithType;
 	
-	printf("Please select the EtherType you wish to grab.\n");
+	printf("Please select the frame/packet type you wish to grab.\n");
 	printf(" 1: Frame Type: ARP\n");
 	printf(" 2: Frame Type: IP\n");
 	printf(" 3: Packet Type: IPv4\n");
@@ -168,7 +168,7 @@ int runGetNumPackets()
 	unsigned char buffer[ETH_FRAME_LEN] = "";
 	struct ethernetFrame *frame;
 	
-	printf("Please select the EtherType you wish to grab.\n");
+	printf("Please select the frame/packet type you wish to grab.\n");
 	printf(" 1: Any Frames or Packets\n");
 	printf(" 2: Frame Type: ARP\n");
 	printf(" 3: Frame Type: IP\n");
