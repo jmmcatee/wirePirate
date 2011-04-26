@@ -24,10 +24,12 @@ struct ip4Packet
 	unsigned char headerChecksum[2];
 	unsigned char sourceAddress[4];
 	unsigned char destinationAddress[4];
+	unsigned char options[4];
 	unsigned char payload[ (ETH_FRAME_LEN - 35) ];
 	unsigned char rawPacket[ (ETH_FRAME_LEN - 14) ];
 
 	unsigned int size;
+	struct tcpPacket *tcp;
 };
 
 
@@ -79,15 +81,30 @@ struct ip4Packet *parseIP4Packet(struct ethernetFrame *linkFrame)
 	}
 	spacer+=4;
 	
+	if (packet->headerLength == 6)
+	{
+		for(i=0; i<4; i++)
+		{
+			packet->options[i] = linkFrame->payload[i+spacer];
+		}
+		spacer+=4;
+	}
+	
 	for(i=0; i<(linkFrame->size-20); i++)
 	{
 		packet->payload[i] = linkFrame->payload[i+spacer];
-		packet->size++;
 	}
+	
+	packet->size = linkFrame->size - spacer;
 	
 	for(i=0; i<(linkFrame->size-14); i++)
 	{
 		packet->rawPacket[i] = linkFrame->payload[i];
+	}
+	
+	if( checkProtocolType(packet, tcpType) )
+	{
+		packet->tcp = parseTCPPacket(packet);
 	}
 
 	return packet;
@@ -192,6 +209,11 @@ void printIP4Packet(struct ip4Packet *packet)
 		printf("\n");
 	}
 	printf("################################################################################\n\n");
+	
+	if( packet->tcp != NULL )
+	{
+		printTCPPacket(packet->tcp);
+	}
 }
 
 int checkIPPacketType(struct ethernetFrame *linkFrame)
@@ -202,6 +224,7 @@ int checkIPPacketType(struct ethernetFrame *linkFrame)
 
 int checkProtocolType(struct ip4Packet *packet, unsigned char protocolType)
 {
+	if (packet == NULL) { return 0; }
 	if(packet->protocol == protocolType ) { return 1; }
 	else { return 0; }
 }

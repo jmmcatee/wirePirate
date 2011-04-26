@@ -23,10 +23,13 @@ unsigned char printRaw 		= 0;
 #include "_link_layer_function_prototypes.h"
 #include "_network_layer_function_prototypes.h"
 #include "_user_interface_function_prototypes.h"
-#include "_benchmarks_timers_function_prototypes.h"	
+#include "_benchmarks_timers_function_prototypes.h"
+#include "_transport_layer_function_prototypes.h"
+
 
 /* Custom built code header files */
 #include "_benchmarks_timers.h"			// Benchmark Header Files
 #include "_link_layer_functions.h"		// Ethernet Function Header File
 #include "_network_layer_functions.h"		// Network Function Header File
 #include "_user_interface.h"			// User Interface Header File
+#include "_transport_layer_functions.h"

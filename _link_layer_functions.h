@@ -51,6 +51,7 @@ struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE)
 	/* Create an ethernet struct and allocate space for it in memory */
 	struct ethernetFrame *returnFrame = (struct ethernetFrame *) malloc (sizeof(struct ethernetFrame));
 	
+	
 	int i; int spacer;
 	
 	/* Size returned from grabbing the frame from the socket in recv() */
@@ -61,6 +62,12 @@ struct ethernetFrame *parseFrame(unsigned char* buffer, unsigned int SIZE)
 	{
 		returnFrame->destAddr[i] = buffer[i];
 	}
+	if (returnFrame->destAddr[0] == 0x00 && returnFrame->destAddr[1] == 0x00 && returnFrame->destAddr[2] == 0x03 
+			&& returnFrame->destAddr[3] == 0x04 && returnFrame->destAddr[4] == 0x00 && returnFrame->destAddr[5] == 0x06)
+	{
+		return NULL;
+	}
+	
 	spacer = 6;
 	
 	/* Populate the source MAC address one octet at a time */	
