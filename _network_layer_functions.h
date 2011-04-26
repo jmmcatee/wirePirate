@@ -1,15 +1,6 @@
  /*
  *	
  *
-didn't update the user interface much, this is run whenever you select a IP packet type of an ethernet frame.
-
-
-
-not sure what the checkIPPacketType function is for
-still a work in progress!
-4/24/11
-
-
  *	File: 	_network_layer_functions.h
  *	Author:	Michael McAtee
  */
@@ -33,8 +24,8 @@ struct ip4Packet
 	unsigned char headerChecksum[2];
 	unsigned char sourceAddress[4];
 	unsigned char destinationAddress[4];
-	unsigned char payload[(ETH_FRAME_LEN-35)];
-	unsigned char rawPacket[(ETH_FRAME_LEN - 14)];
+	unsigned char payload[ (ETH_FRAME_LEN - 35) ];
+	unsigned char rawPacket[ (ETH_FRAME_LEN - 14) ];
 
 	unsigned int size;
 };
