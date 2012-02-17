@@ -13,7 +13,7 @@
 #include <linux/if_arp.h>
 
 /* Global Definitions */
-#define VERSION 0.1
+#define VERSION 0.5
 
 /* Global Variables */
 unsigned char printPayload 	= 0;

@@ -7,7 +7,6 @@
  *	to print the values of the ethernet struct, as this is the prupose of the application.
  *
  *	File: 	_link_layer_functions.h
- *	Author:	Michael McAtee
  */
 
 /* Defined values for Ethertype field specified in 802.3 */

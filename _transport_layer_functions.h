@@ -2,7 +2,6 @@
  *	
  *
  *	File: 	_transport_layer_functions.h
- *	Author:	Michael McAtee
  */
 
 

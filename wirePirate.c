@@ -1,6 +1,11 @@
 /*
- *
- *
+ *	WirePirate
+ *	
+ *	Authors: Chad Dennie, Zach Farr, Michael McAtee, Todd Whetstone
+ *	Description: This program will pull a Ethernet frame in binary form from the network card and parse that frame into high layer protocols.
+ *		The program will include parsing for Ethernet frames, IPv4 packets, as well as TCP and UDP packets. Ethernet CRCs will be checked as
+ *		will checksums for all packets. Timing will be included as well to compare software checks against the built in hardware checks for
+ *		Ethernet, IP, and TCP.
 */
 
 /* Header File */
@@ -24,15 +29,4 @@ int main(int argc, char *argv[])
 	{
 		// This will run until it is exited
 	}
-	
-	/* Use to test Network Layer Functions
-	struct ethernetFrame *frame;
-	unsigned char buffer[ETH_FRAME_LEN] = "";
-	int s = createSocket();
-	do {
-		frame = parseFrame( buffer, getLinkLayerFrame(s, buffer) );
-	} while ( !checkEtherType(frame, ip4Type) );
-	printFrame(frame);
-	*/
-	
 }
